@@ -7,17 +7,15 @@ spec:
   params:
     - name: message
       default: "Default message"
-    - name: pipeline-name-suffix
-      description: The suffix to use for the pipeline name
     - name: gitrevision
     - name: giturl
-    - name: branch
-      description: The branch that started the pipeline
+    - name: ns
+      description: The namespace to deploy into
   resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
-        generateName: run-deploy-pipeline-$(params.pipeline-name-suffix)-
+        generateName: run-deploy-pipeline-$(params.ns)-
         namespace: coffeeshop-pipelines
       spec:
         serviceAccountName: pipeline-service-account
@@ -35,5 +33,5 @@ spec:
         params:
           - name: message
             value: $(params.message)
-          - name: branch
-            value: $(params.branch)
+          - name: ns
+            value: $(params.ns)
