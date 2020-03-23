@@ -8,16 +8,16 @@ This repo contains Tekton resources for continuous deployment of the Coffeeshop 
 1. Create a personal access token on GitHub with the `public_repo` scope.
 1. Update the `password` field in the `pipeline/git-secrets.yaml` file to the personal access token created in the previous step.
 1. Deploy the pipeline components:
-   * `kubectl create ns coffeeshop-pipelines`
-   * `kubectl apply -f serviceaccount.yaml`
-   * `kubectl apply -f pipeline/git-secrets.yaml`
-   * `kubectl apply -f pipeline/pipeline-clusterroles.yaml`
-   * `kubectl apply -f pipeline/task-deploy.yaml`
-   * `kubectl apply -f pipeline/task-tests.yaml`
-   * `kubectl apply -f pipeline/pipeline-resources.yaml`
-   * `kubectl apply -f pipeline/pipeline-deploy.yaml`
+   * `oc create ns coffeeshop-pipelines`
+   * `oc apply -f serviceaccount.yaml`
+   * `oc apply -f pipeline/git-secrets.yaml`
+   * `oc apply -f pipeline/pipeline-clusterroles.yaml`
+   * `oc apply -f pipeline/task-deploy.yaml`
+   * `oc apply -f pipeline/task-tests.yaml`
+   * `oc apply -f pipeline/pipeline-resources.yaml`
+   * `oc apply -f pipeline/pipeline-deploy.yaml`
 1. Now you can manually run the pipeline which will deploy your resources. (Currently you will also need to have deployed `triggers/git-secrets` otherwise the pipeline will fail)
-   * `kubectl create -f pipeline/run-pipeline.yaml`
+   * `oc create -f pipeline/run-pipeline.yaml`
 
 **Triggers**
 
@@ -32,12 +32,12 @@ This repo contains Tekton resources for continuous deployment of the Coffeeshop 
    * "Content-Type" as `application/json`.
    * In "Events" leave the "Just the push event" trigger option selected.
 1. Deploy the trigger components:
-   * `kubectl apply -f trigger/git-secrets.yaml`
-   * `kubectl apply -f trigger/pipeline-roles.yaml`
-   * `kubectl apply -f trigger/eventlistener.yaml`
-   * `kubectl apply -f trigger/triggertemplate.yaml`
-   * `kubectl apply -f trigger/triggerbindings.yaml`
-   * `kubectl apply -f trigger/ingress.yaml`
+   * `oc apply -f trigger/git-secrets.yaml`
+   * `oc apply -f trigger/pipeline-roles.yaml`
+   * `oc apply -f trigger/eventlistener.yaml`
+   * `oc apply -f trigger/triggertemplate.yaml`
+   * `oc apply -f trigger/triggerbindings.yaml`
+   * `oc apply -f trigger/ingress.yaml`
 
 **Dashboard**
 
@@ -52,8 +52,8 @@ This repo contains Tekton resources for continuous deployment of the Coffeeshop 
    * via the command line as follows:  
    `oc describe deployment router-default -n openshift-ingress | grep HOSTNAME`
 1. Deploy the dashboard components.
-   * `kubectl create ns tekton-pipelines`
-   * `kubectl apply -f https://github.com/tektoncd/dashboard/releases/download/v0.5.2/openshift-tekton-dashboard-release.yaml --validate=false`
-   * `kubectl apply -f dashboard/tekton-dashboard-secret.yaml`
-   * `kubectl apply -f dashboard/ingress.yaml` 
+   * `oc create ns tekton-pipelines`
+   * `oc apply -f https://github.com/tektoncd/dashboard/releases/download/v0.5.2/openshift-tekton-dashboard-release.yaml --validate=false`
+   * `oc apply -f dashboard/tekton-dashboard-secret.yaml`
+   * `oc apply -f dashboard/ingress.yaml` 
 1. You can find the url for the dashboard in the `Routes` in the `tekton-pipelines` project.
