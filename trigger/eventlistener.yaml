@@ -6,33 +6,21 @@ metadata:
 spec:
   serviceAccountName: pipeline-service-account
   triggers:
-    - name: staging-branch-trigger
+    - name: dev-trigger
       interceptors:
         - cel:
-            filter: "header.match('X-GitHub-Event','push') && body.ref == 'refs/heads/staging'"
+            filter: "header.match('X-GitHub-Event','push') && body.repository.name == 'gitops-dev'"
       bindings:
-        - name: ref-branch-binding
+        - name: dev-binding
         - name: git-binding
-        - name: pipeline-staging-binding
       template:
         name: pipeline-template
-    - name: prod-branch-trigger
+    - name: staging-trigger
       interceptors:
         - cel:
-            filter: "header.match('X-GitHub-Event','push') && body.ref == 'refs/heads/prod'"
+            filter: "header.match('X-GitHub-Event','push') && body.repository.name == 'gitops-staging'"
       bindings:
-        - name: ref-branch-binding
+        - name: staging-binding
         - name: git-binding
-        - name: pipeline-prod-binding
-      template:
-        name: pipeline-template
-    - name: master-trigger
-      interceptors:
-        - cel:
-            filter: "header.match('X-GitHub-Event','push') && body.ref == 'refs/heads/master'"
-      bindings:
-        - name: master-branch-binding
-        - name: git-binding
-        - name: pipeline-dev-binding
       template:
         name: pipeline-template
