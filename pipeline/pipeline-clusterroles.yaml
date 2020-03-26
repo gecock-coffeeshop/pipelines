@@ -23,6 +23,20 @@ rules:
       - get
       - create
   - apiGroups:
+      - integreatly.org
+    resources:
+      - grafanadashboards
+    verbs:
+      - get
+      - create
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - servicemonitors
+    verbs:
+      - get
+      - create
+  - apiGroups:
       - route.openshift.io
     resources:
       - routes
