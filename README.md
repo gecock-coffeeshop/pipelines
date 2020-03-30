@@ -2,22 +2,28 @@
 
 This repo contains Tekton resources for continuous deployment of the Coffeeshop demo.
 
-**Pipelines**
+**Build Pipelines**
+1. Create a secret containing your Docker ID:
+```
+oc create secret generic docker-secret --from-literal=username=<DOCKER_USER> --from-literal=password=<DOCKER_TOKEN>
+```
+
+**Deployment Pipelines**
 
 1. Install the OpenShift Pipelines Operator from OperatorHub.
 1. Create a personal access token on GitHub with the `public_repo` scope.
-1. Update the `password` field in the `pipeline/git-secrets.yaml` file to the personal access token created in the previous step.
+1. Update the `password` field in the `deploy/pipelinegit-secrets.yaml` file to the personal access token created in the previous step.
 1. Deploy the pipeline components:
    * `oc create ns coffeeshop-pipelines`
    * `oc apply -f serviceaccount.yaml`
-   * `oc apply -f pipeline/git-secrets.yaml`
-   * `oc apply -f pipeline/pipeline-clusterroles.yaml`
-   * `oc apply -f pipeline/task-deploy.yaml`
-   * `oc apply -f pipeline/task-tests.yaml`
-   * `oc apply -f pipeline/pipeline-resources.yaml`
-   * `oc apply -f pipeline/pipeline-deploy.yaml`
+   * `oc apply -f deploy/pipelinegit-secrets.yaml`
+   * `oc apply -f deploy/pipelinepipeline-clusterroles.yaml`
+   * `oc apply -f deploy/pipelinetask-deploy.yaml`
+   * `oc apply -f deploy/pipelinetask-tests.yaml`
+   * `oc apply -f deploy/pipelinepipeline-resources.yaml`
+   * `oc apply -f deploy/pipelinepipeline-deploy.yaml`
 1. Now you can manually run the pipeline which will deploy your resources. (Currently you will also need to have deployed `triggers/git-secrets` otherwise the pipeline will fail)
-   * `oc create -f pipeline/run-pipeline.yaml`
+   * `oc create -f deploy/pipelinerun-pipeline.yaml`
 
 **Triggers**
 
