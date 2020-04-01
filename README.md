@@ -2,28 +2,23 @@
 
 This repo contains Tekton resources for continuous deployment of the Coffeeshop demo.
 
-**Build Pipelines**
-1. Create a secret containing your Docker ID:
-```
-oc create secret generic docker-secret --from-literal=username=<DOCKER_USER> --from-literal=password=<DOCKER_TOKEN>
-```
-
-**Deployment Pipelines**
-
+**Build and Deploy Pipelines**
 1. Install the OpenShift Pipelines Operator from OperatorHub.
 1. Create a personal access token on GitHub with the `public_repo` scope.
-1. Update the `password` field in the `deploy/pipelinegit-secrets.yaml` file to the personal access token created in the previous step.
+1. Update the `password` field in the `deploy/pipeline/git-secrets.yaml` file to the personal access token created in the previous step.
+1. Create a personal access token DockerHub.
+1. Update `build/pipeline/docker-secret.yaml` with your Docker ID and token.
+1. In `build/pipeline/pipeline-resources.yaml`, update the `coffeeshop-image` resource `url` attribute to an image repository you can push to.
 1. Deploy the pipeline components:
    * `oc create ns coffeeshop-pipelines`
    * `oc apply -f serviceaccount.yaml`
-   * `oc apply -f deploy/pipelinegit-secrets.yaml`
-   * `oc apply -f deploy/pipelinepipeline-clusterroles.yaml`
-   * `oc apply -f deploy/pipelinetask-deploy.yaml`
-   * `oc apply -f deploy/pipelinetask-tests.yaml`
-   * `oc apply -f deploy/pipelinepipeline-resources.yaml`
-   * `oc apply -f deploy/pipelinepipeline-deploy.yaml`
-1. Now you can manually run the pipeline which will deploy your resources. (Currently you will also need to have deployed `triggers/git-secrets` otherwise the pipeline will fail)
-   * `oc create -f deploy/pipelinerun-pipeline.yaml`
+   * `oc apply -f build/pipeline`
+   * `oc apply -f deploy/pipeline`
+1. Deploy the webhook secret. This is referenced by the service account, so nothing will work unless it exists.
+   * `oc apply -f trigger/git-secrets.yaml`
+1. Now you can manually run the pipelines: 
+   * Build and promote the coffeeshop-ui service: `oc create -f build/run-pipeline.yaml`
+   * Deploy the gitops-dev repo: `oc create -f deploy/run-pipeline.yaml`
 
 **Triggers**
 

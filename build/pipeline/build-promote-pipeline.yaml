@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
   name: appsody-build-pipeline
+  namespace: coffeeshop-pipelines
 spec:
   resources:
     - name: service-source

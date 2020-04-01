@@ -3,7 +3,8 @@ items:
 - apiVersion: tekton.dev/v1alpha1
   kind: PipelineResource
   metadata:
-    name: coffeeshop-image
+    name: coffeeshop-ui-image
+    namespace: coffeeshop-pipelines
   spec:
     params:
     - name: url
@@ -13,6 +14,7 @@ items:
   kind: PipelineResource
   metadata:
     name: coffeeshop-ui-repo
+    namespace: coffeeshop-pipelines
   spec:
     params:
     - name: revision
@@ -24,6 +26,7 @@ items:
   kind: PipelineResource
   metadata: 
     name: gitops-dev-repo
+    namespace: coffeeshop-pipelines
   spec:
     params:
     - name: revision
