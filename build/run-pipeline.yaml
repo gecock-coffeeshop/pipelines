@@ -1,13 +1,13 @@
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
 metadata:
-  generateName: appsody-manual-pipeline-run-
+  generateName: build-manual-pipeline-run-
   namespace: coffeeshop-pipelines
 spec:
   serviceAccountName: pipeline-service-account
   timeout: "1h0m0s"  
   pipelineRef:
-    name: appsody-build-pipeline
+    name: build-pipeline
   resources:
     - name: service-source
       resourceRef:

@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
-  name: appsody-build-push-task
+  name: build-push-promote-task
   namespace: coffeeshop-pipelines
 spec:
   inputs:
@@ -54,8 +54,8 @@ spec:
       image: docker.io/csantanapr/helm-kubectl-curl-git-jq-yq
       script: |
         #!/usr/bin/env sh
-        git config --global user.email $(inputs.params.git-email)
-        git config --global user.name $(inputs.params.git-user)
+        git config --global user.email "$(inputs.params.git-email)"
+        git config --global user.name "$(inputs.params.git-user)"
         cd "$gitops_source/services/$(inputs.params.reponame)/base/config"
         cp /workspace/$service_source/app-deploy.yaml .
         git add app-deploy.yaml

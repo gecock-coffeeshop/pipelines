@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: appsody-build-pipeline
+  name: build-pipeline
   namespace: coffeeshop-pipelines
 spec:
   resources:
@@ -24,7 +24,7 @@ spec:
   tasks:
     - name: appsody-build
       taskRef:
-        name: appsody-build-push-task
+        name: build-push-promote-task
       resources:
         inputs:
         - name: service-source

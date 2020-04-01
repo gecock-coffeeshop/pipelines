@@ -20,7 +20,7 @@ spec:
       spec:
         serviceAccountName: pipeline-service-account
         pipelineRef:
-          name: appsody-build-pipeline
+          name: build-pipeline
         resources:
           - name: service-source
             resourceSpec:
