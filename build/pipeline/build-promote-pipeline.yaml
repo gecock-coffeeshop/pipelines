@@ -17,7 +17,10 @@ spec:
     - name: git-user
       type: string
     - name: git-email
-      type: string      
+      type: string
+    - name: image-tag
+      type: string  
+      
   tasks:
     - name: appsody-build
       taskRef:
@@ -39,3 +42,5 @@ spec:
         value: $(params.git-user)  
       - name: git-email
         value: $(params.git-email)  
+      - name: image-tag
+        value: $(params.image-tag)  

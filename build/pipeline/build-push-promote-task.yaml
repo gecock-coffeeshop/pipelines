@@ -22,6 +22,8 @@ spec:
         type: string
       - name: git-email
         type: string
+      - name: image-tag
+        type: string  
 
   steps:
     - name: build
@@ -31,7 +33,7 @@ spec:
       command: ['/bin/bash']
       args:
         - -c
-        - "cd /workspace/$service_source && appsody build -v --buildah --buildah-options='--format=docker' -t $(inputs.resources.docker-image.url) -f $(inputs.params.app-deploy-file-name)"
+        - "cd /workspace/$service_source && appsody build -v --buildah --buildah-options='--format=docker' -t $(inputs.resources.docker-image.url):$(inputs.params.image-tag) -f $(inputs.params.app-deploy-file-name)"
       env:
         - name: service_source
           value: service-source
@@ -44,7 +46,7 @@ spec:
       image: appsody/appsody-buildah:0.5.9-buildah1.9.0
       script: |
         #!/usr/bin/env sh
-        buildah push --tls-verify=false $(inputs.resources.docker-image.url) docker://$(inputs.resources.docker-image.url)
+        buildah push --tls-verify=false $(inputs.resources.docker-image.url):$(inputs.params.image-tag) docker://$(inputs.resources.docker-image.url):$(inputs.params.image-tag)
       volumeMounts:
          - mountPath: /var/lib/containers
            name: varlibcontainers

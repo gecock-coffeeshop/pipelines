@@ -25,3 +25,5 @@ spec:
       value: "Matthew Wilson"    
     - name: git-email
       value: "matthew.wilson@uk.ibm.com"  
+    - name: image-tag
+      value: "fake-sha"  

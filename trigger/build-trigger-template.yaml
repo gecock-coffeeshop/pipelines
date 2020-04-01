@@ -1,0 +1,47 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: build-pipeline-template
+  namespace: coffeeshop-pipelines
+spec:
+  params:
+    - name: gitrevision
+    - name: giturl
+    - name: gitsha
+    - name: gituser
+    - name: gitemail
+    - name: gitrepo
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        generateName: run-build-pipeline-$(params.gitrepo)-
+        namespace: coffeeshop-pipelines
+      spec:
+        serviceAccountName: pipeline-service-account
+        pipelineRef:
+          name: appsody-build-pipeline
+        resources:
+          - name: service-source
+            resourceSpec:
+              type: git
+              params:
+              - name: revision
+                value: $(params.gitrevision)
+              - name: url
+                value: $(params.giturl)
+          - name: gitops-source
+            resourceRef:
+              name: gitops-dev-repo    
+          - name: docker-image
+            resourceRef:
+              name: coffeeshop-ui-image      
+        params:
+          - name: reponame
+            value: $(params.gitrepo)
+          - name: git-user
+            value: $(params.gituser)
+          - name: git-email
+            value: $(params.gitemail) 
+          - name: image-tag
+            value: $(params.gitsha) 

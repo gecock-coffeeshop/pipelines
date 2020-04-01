@@ -8,7 +8,7 @@ items:
   spec:
     params:
     - name: url
-      value: index.docker.io/ianpartridge/coffeeshop-ui
+      value: index.docker.io/matthewpwilson/coffeeshop-ui
     type: image
 - apiVersion: tekton.dev/v1alpha1
   kind: PipelineResource
