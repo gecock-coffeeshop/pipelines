@@ -22,8 +22,8 @@ spec:
     - name: reponame
       value: coffeeshop-ui    
     - name: git-user
-      value: "Matthew Wilson"    
+      value: "Coffeeshop pipeline"    
     - name: git-email
-      value: "matthew.wilson@uk.ibm.com"  
+      value: "coffeeshop-pipeline@ibm.com"  
     - name: image-tag
       value: "fake-sha"  
