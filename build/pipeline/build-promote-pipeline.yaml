@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: build-pipeline
+  namespace: coffeeshop-pipelines
+spec:
+  resources:
+    - name: service-source
+      type: git
+    - name: gitops-source
+      type: git  
+    - name: docker-image
+      type: image
+  params:
+    - name: reponame
+      type: string
+    - name: git-user
+      type: string
+    - name: git-email
+      type: string
+    - name: image-tag
+      type: string  
+      
+  tasks:
+    - name: appsody-build
+      taskRef:
+        name: build-push-promote-task
+      resources:
+        inputs:
+        - name: service-source
+          resource: service-source
+        - name: gitops-source
+          resource: gitops-source
+        - name: docker-image
+          resource: docker-image
+      params:
+      - name: app-deploy-file-name
+        value: app-deploy.yaml
+      - name: reponame
+        value: $(params.reponame)  
+      - name: git-user
+        value: $(params.git-user)  
+      - name: git-email
+        value: $(params.git-email)  
+      - name: image-tag
+        value: $(params.image-tag)  

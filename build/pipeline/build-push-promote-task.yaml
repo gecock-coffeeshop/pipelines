@@ -1,0 +1,86 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: build-push-promote-task
+  namespace: coffeeshop-pipelines
+spec:
+  inputs:
+    resources:
+      - name: service-source
+        type: git
+      - name: gitops-source
+        type: git  
+      - name: docker-image
+        type: image
+    params:
+      - name: app-deploy-file-name
+        type: string
+        default: app-deploy.yaml
+      - name: reponame
+        type: string
+      - name: git-user
+        type: string
+      - name: git-email
+        type: string
+      - name: image-tag
+        type: string  
+
+  steps:
+    - name: build
+      securityContext:
+        privileged: true
+      image: appsody/appsody-buildah:0.5.9-buildah1.9.0
+      command: ['/bin/bash']
+      args:
+        - -c
+        - "cd /workspace/$service_source && appsody build -v --buildah --buildah-options='--format=docker' -t $(inputs.resources.docker-image.url):$(inputs.params.image-tag) -f $(inputs.params.app-deploy-file-name)"
+      env:
+        - name: service_source
+          value: service-source
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
+    - name: push
+      securityContext:
+        privileged: true
+      image: appsody/appsody-buildah:0.5.9-buildah1.9.0
+      script: |
+        #!/usr/bin/env sh
+        buildah push --tls-verify=false $(inputs.resources.docker-image.url):$(inputs.params.image-tag) docker://$(inputs.resources.docker-image.url):$(inputs.params.image-tag)
+      volumeMounts:
+         - mountPath: /var/lib/containers
+           name: varlibcontainers
+    - name: promote
+      image: docker.io/matthewpwilson/hub
+      script: |
+        #!/usr/bin/env sh
+        set -e
+
+        git config --global user.email "$(inputs.params.git-email)"
+        git config --global user.name "$(inputs.params.git-user)"
+        git config --global --add hub.host github.ibm.com
+        GITHUB_HOST=github.ibm.com
+
+        branch="promote-`echo $(inputs.params.image-tag) | cut -c-6`"
+        cd "$gitops_source/services/$(inputs.params.reponame)/base/config"
+        git checkout -b $branch
+
+        cp /workspace/$service_source/app-deploy.yaml .
+        git add app-deploy.yaml
+        message="Promoting $(inputs.params.reponame) from build-push-promote pipeline"
+        git commit -m "$message"
+        git push origin $branch
+        hub pull-request -m "$message"
+      env:
+        - name: service_source
+          value: service-source
+        - name: gitops_source
+          value: gitops-source  
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: git-auth  
+              key: password
+  volumes:
+    - name: varlibcontainers
+      emptyDir: {}

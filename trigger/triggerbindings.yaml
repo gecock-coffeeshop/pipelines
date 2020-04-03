@@ -33,3 +33,11 @@ spec:
       value: $(body.head_commit.id)
     - name: giturl
       value: $(body.repository.clone_url)
+    - name: gitsha
+      value: $(body.head_commit.id)
+    - name: gituser
+      value: $(body.head_commit.author.name)  
+    - name: gitemail
+      value: $(body.head_commit.author.email)   
+    - name: gitrepo
+      value: $(body.repository.name)      

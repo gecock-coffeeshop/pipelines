@@ -1,0 +1,37 @@
+apiVersion: v1
+items:
+- apiVersion: tekton.dev/v1alpha1
+  kind: PipelineResource
+  metadata:
+    name: coffeeshop-ui-image
+    namespace: coffeeshop-pipelines
+  spec:
+    params:
+    - name: url
+      value: index.docker.io/matthewpwilson/coffeeshop-ui
+    type: image
+- apiVersion: tekton.dev/v1alpha1
+  kind: PipelineResource
+  metadata:
+    name: coffeeshop-ui-repo
+    namespace: coffeeshop-pipelines
+  spec:
+    params:
+    - name: revision
+      value: master
+    - name: url
+      value: https://github.ibm.com/appsody-coffeeshop/coffeeshop-ui
+    type: git
+- apiVersion: tekton.dev/v1alpha1
+  kind: PipelineResource
+  metadata: 
+    name: gitops-dev-repo
+    namespace: coffeeshop-pipelines
+  spec:
+    params:
+    - name: revision
+      value: master
+    - name: url
+      value: https://github.ibm.com/appsody-coffeeshop/gitops-dev
+    type: git    
+kind: List

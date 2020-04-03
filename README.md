@@ -1,23 +1,24 @@
 ### Coffeeshop Continuous Deployment with Tekton
 
-This repo contains Tekton resources for continuous deployment of the Coffeeshop demo.
+This repo contains Tekton resources for continuous integration & continuous deployment of the Coffeeshop demo.
 
-**Pipelines**
-
+**Build and Deploy Pipelines**
 1. Install the OpenShift Pipelines Operator from OperatorHub.
 1. Create a personal access token on GitHub with the `public_repo` scope.
-1. Update the `password` field in the `pipeline/git-secrets.yaml` file to the personal access token created in the previous step.
+1. Update the `password` field in the `deploy/pipeline/git-secrets.yaml` file to the personal access token created in the previous step.
+1. Create a personal access token DockerHub.
+1. Update `build/pipeline/docker-secret.yaml` with your Docker ID and token.
+1. In `build/pipeline/pipeline-resources.yaml`, update the `coffeeshop-image` resource `url` attribute to an image repository you can push to.
 1. Deploy the pipeline components:
    * `oc create ns coffeeshop-pipelines`
    * `oc apply -f serviceaccount.yaml`
-   * `oc apply -f pipeline/git-secrets.yaml`
-   * `oc apply -f pipeline/pipeline-clusterroles.yaml`
-   * `oc apply -f pipeline/task-deploy.yaml`
-   * `oc apply -f pipeline/task-tests.yaml`
-   * `oc apply -f pipeline/pipeline-resources.yaml`
-   * `oc apply -f pipeline/pipeline-deploy.yaml`
-1. Now you can manually run the pipeline which will deploy your resources. (Currently you will also need to have deployed `triggers/git-secrets` otherwise the pipeline will fail)
-   * `oc create -f pipeline/run-pipeline.yaml`
+   * `oc apply -f build/pipeline`
+   * `oc apply -f deploy/pipeline`
+1. Deploy the webhook secret. This is referenced by the service account, so nothing will work unless it exists.
+   * `oc apply -f trigger/git-secrets.yaml`
+1. Now you can manually run the pipelines: 
+   * Build and promote the coffeeshop-ui service: `oc create -f build/run-pipeline.yaml`
+   * Deploy the gitops-dev repo: `oc create -f deploy/run-pipeline.yaml`
 
 **Triggers**
 
@@ -26,18 +27,13 @@ This repo contains Tekton resources for continuous deployment of the Coffeeshop 
    * via the command line as follows:  
    `oc describe deployment router-default -n openshift-ingress | grep HOSTNAME`
 1. Update the `webhooksecret` field in the `trigger/git-secrets.yaml` file to a randomly generated secret.
-1. Create webhook on GitHub, specifying:
+1. Create webhooks on GitHub for each microservice and each GitOps repo, specifying:
    * "Payload URL" as `http://eventlistener.<HOST>:80` where host is the same as from the ingress file above.
    * "Secret" as the `webhooksecret` from `trigger/git-secrets.yaml`.
    * "Content-Type" as `application/json`.
    * In "Events" leave the "Just the push event" trigger option selected.
 1. Deploy the trigger components:
-   * `oc apply -f trigger/git-secrets.yaml`
-   * `oc apply -f trigger/pipeline-roles.yaml`
-   * `oc apply -f trigger/eventlistener.yaml`
-   * `oc apply -f trigger/triggertemplate.yaml`
-   * `oc apply -f trigger/triggerbindings.yaml`
-   * `oc apply -f trigger/ingress.yaml`
+   * `oc apply -f trigger`
 
 **Dashboard**
 

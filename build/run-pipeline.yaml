@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  generateName: build-manual-pipeline-run-
+  namespace: coffeeshop-pipelines
+spec:
+  serviceAccountName: pipeline-service-account
+  timeout: "1h0m0s"  
+  pipelineRef:
+    name: build-pipeline
+  resources:
+    - name: service-source
+      resourceRef:
+        name: coffeeshop-ui-repo
+    - name: gitops-source
+      resourceRef:
+        name: gitops-dev-repo    
+    - name: docker-image
+      resourceRef:
+        name: coffeeshop-ui-image
+  params:
+    - name: reponame
+      value: coffeeshop-ui    
+    - name: git-user
+      value: "Coffeeshop pipeline"    
+    - name: git-email
+      value: "coffeeshop-pipeline@ibm.com"  
+    - name: image-tag
+      value: "fake-sha"  
