@@ -1,0 +1,37 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: promote-pipeline
+  namespace: coffeeshop-pipelines
+spec:
+  resources:
+    - name: gitops-dest
+      type: git
+    - name: gitops-source
+      type: git  
+  params:
+    - name: service
+      type: string
+      description: service to promote
+    - name: git-user
+      type: string
+    - name: git-email
+      type: string
+      
+  tasks:
+    - name: promote-service
+      taskRef:
+        name: promote-task
+      resources:
+        inputs:
+        - name: gitops-dest
+          resource: gitops-dest
+        - name: gitops-source
+          resource: gitops-source
+      params:
+      - name: service
+        value: $(params.service)  
+      - name: git-user
+        value: $(params.git-user)  
+      - name: git-email
+        value: $(params.git-email)  
