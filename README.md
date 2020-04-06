@@ -2,7 +2,7 @@
 
 This repo contains Tekton resources for continuous integration & continuous deployment of the Coffeeshop demo.
 
-**Build and Deploy Pipelines**
+**Build, Deploy and Promote Pipelines**
 1. Install the OpenShift Pipelines Operator from OperatorHub.
 1. Create a personal access token on GitHub with the `public_repo` scope.
 1. Update the `password` field in the `deploy/pipeline/git-secrets.yaml` file to the personal access token created in the previous step.
@@ -14,11 +14,13 @@ This repo contains Tekton resources for continuous integration & continuous depl
    * `oc apply -f serviceaccount.yaml`
    * `oc apply -f build/pipeline`
    * `oc apply -f deploy/pipeline`
+   * `oc apply -f promote/pipeline`
 1. Deploy the webhook secret. This is referenced by the service account, so nothing will work unless it exists.
    * `oc apply -f trigger/git-secrets.yaml`
 1. Now you can manually run the pipelines: 
    * Build and promote the coffeeshop-ui service: `oc create -f build/run-pipeline.yaml`
    * Deploy the gitops-dev repo: `oc create -f deploy/run-pipeline.yaml`
+   * Promote a service from dev to staging: `oc create -f promote/run-pipeline.yaml`
 
 **Triggers**
 
