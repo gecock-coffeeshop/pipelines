@@ -62,11 +62,11 @@ spec:
         GITHUB_HOST=github.ibm.com
 
         branch="promote-`echo $(inputs.params.image-tag) | cut -c-6`"
-        cd "$gitops_source/services/$(inputs.params.reponame)/base/config"
+        cd "$gitops_source/services/$(inputs.params.reponame)/base"
         git checkout -b $branch
-
-        cp /workspace/$service_source/app-deploy.yaml .
-        git add app-deploy.yaml
+        cp -R /workspace/$service_source/config .
+        cp /workspace/$service_source/app-deploy.yaml config
+        git add config
         message="Promoting $(inputs.params.reponame) from build-push-promote pipeline"
         git commit -m "$message"
         git push origin $branch
