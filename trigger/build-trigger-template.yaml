@@ -30,9 +30,6 @@ spec:
                 value: $(params.gitrevision)
               - name: url
                 value: $(params.giturl)
-          - name: gitops-source
-            resourceRef:
-              name: gitops-dev-repo    
           - name: docker-image
             resourceRef:
               name: coffeeshop-ui-image      
@@ -45,3 +42,5 @@ spec:
             value: $(params.gitemail) 
           - name: image-tag
             value: $(params.gitsha) 
+          - name: gitops-repo-url
+            value: "https://github.ibm.com/appsody-coffeeshop/gitops-dev"  
