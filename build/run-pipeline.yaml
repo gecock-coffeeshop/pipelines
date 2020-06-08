@@ -11,10 +11,7 @@ spec:
   resources:
     - name: service-source
       resourceRef:
-        name: coffeeshop-ui-repo
-    - name: gitops-source
-      resourceRef:
-        name: gitops-dev-repo    
+        name: coffeeshop-ui-repo 
     - name: docker-image
       resourceRef:
         name: coffeeshop-ui-image
@@ -27,3 +24,5 @@ spec:
       value: "coffeeshop-pipeline@ibm.com"  
     - name: image-tag
       value: "fake-sha"  
+    - name: gitops-repo-url
+      value: "https://github.ibm.com/appsody-coffeeshop/gitops-dev"   

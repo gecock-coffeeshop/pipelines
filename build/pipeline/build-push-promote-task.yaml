@@ -8,8 +8,6 @@ spec:
     resources:
       - name: service-source
         type: git
-      - name: gitops-source
-        type: git  
       - name: docker-image
         type: image
     params:
@@ -24,58 +22,61 @@ spec:
         type: string
       - name: image-tag
         type: string  
+      - name: gitops-repo-url
+        type: string  
 
   steps:
-    - name: build
-      securityContext:
-        privileged: true
-      image: appsody/appsody-buildah:0.5.9-buildah1.9.0
-      command: ['/bin/bash']
-      args:
-        - -c
-        - "cd /workspace/$service_source && appsody build -v --buildah --buildah-options='--format=docker' -t $(inputs.resources.docker-image.url):$(inputs.params.image-tag) -f $(inputs.params.app-deploy-file-name)"
-      env:
-        - name: service_source
-          value: service-source
-      volumeMounts:
-        - mountPath: /var/lib/containers
-          name: varlibcontainers
-    - name: push
-      securityContext:
-        privileged: true
-      image: appsody/appsody-buildah:0.5.9-buildah1.9.0
-      script: |
-        #!/usr/bin/env sh
-        buildah push --tls-verify=false $(inputs.resources.docker-image.url):$(inputs.params.image-tag) docker://$(inputs.resources.docker-image.url):$(inputs.params.image-tag)
-      volumeMounts:
-         - mountPath: /var/lib/containers
-           name: varlibcontainers
+    #- name: build
+    #  securityContext:
+    #    privileged: true
+    #  image: appsody/appsody-buildah:0.5.9-buildah1.9.0
+    #  command: ['/bin/bash']
+    #  args:
+    #    - -c
+    #    - "cd /workspace/$service_source && appsody build -v --buildah --buildah-options='--format=docker' -t $(inputs.resources.docker-image.url):$(inputs.params.image-tag) -f $(inputs.params.app-deploy-file-name)"
+    #  env:
+    #    - name: service_source
+    #      value: service-source
+    #  volumeMounts:
+    #    - mountPath: /var/lib/containers
+    #      name: varlibcontainers
+    #- name: push
+    #  securityContext:
+    #    privileged: true
+    #  image: appsody/appsody-buildah:0.5.9-buildah1.9.0
+    #  script: |
+    #    #!/usr/bin/env sh
+    #    buildah push --tls-verify=false $(inputs.resources.docker-image.url):$(inputs.params.image-tag) docker://$(inputs.resources.docker-image.url):$(inputs.params.image-tag)
+    #  volumeMounts:
+    #     - mountPath: /var/lib/containers
+    #       name: varlibcontainers
     - name: promote
-      image: docker.io/matthewpwilson/hub
+      image: quay.io/redhat-developer/gitops-cli
       script: |
         #!/usr/bin/env sh
         set -e
 
         git config --global user.email "$(inputs.params.git-email)"
         git config --global user.name "$(inputs.params.git-user)"
-        git config --global --add hub.host github.ibm.com
-        GITHUB_HOST=github.ibm.com
 
-        branch="promote-`echo $(inputs.params.image-tag) | cut -c-6`"
-        cd "$gitops_source/services/$(inputs.params.reponame)/base"
-        git checkout -b $branch
-        cp -R /workspace/$service_source/config .
-        cp /workspace/$service_source/app-deploy.yaml config
-        git add config
-        message="Promoting $(inputs.params.reponame) from build-push-promote pipeline"
-        git commit -m "$message"
-        git push origin $branch
-        hub pull-request -m "$message"
+        cd /workspace/$service_source
+        mkdir -p config
+        cp app-deploy.yaml config
+
+        # Generate a kustomize.yaml file under config with list of resources
+        cd config 
+        files=$(ls)
+        KUSTOMIZATION_YAML="kustomization.yaml"
+        echo "resources: " >> $KUSTOMIZATION_YAML
+        for asset_name in $files
+        do
+          echo "  - $asset_name" >> $KUSTOMIZATION_YAML
+        done  
+
+        services promote --from /workspace/$service_source --to $(inputs.params.gitops-repo-url) --service $(inputs.params.reponame) --repository-type ghe --commit-message "Promoting $(inputs.params.reponame) from build-push-promote pipeline"
       env:
         - name: service_source
           value: service-source
-        - name: gitops_source
-          value: gitops-source  
         - name: GITHUB_TOKEN
           valueFrom:
             secretKeyRef:
