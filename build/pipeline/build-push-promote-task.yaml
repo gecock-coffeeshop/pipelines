@@ -62,7 +62,7 @@ spec:
 
           # Generate a kustomize.yaml file under config with list of resources
           cd config 
-          files=$(ls)
+          files=$(ls *.yaml)
           echo "resources: " >> kustomization.yaml
           for resource in $files
           do
