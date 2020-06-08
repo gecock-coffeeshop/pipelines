@@ -7,8 +7,6 @@ spec:
   resources:
     - name: service-source
       type: git
-    - name: gitops-source
-      type: git  
     - name: docker-image
       type: image
   params:
@@ -20,6 +18,8 @@ spec:
       type: string
     - name: image-tag
       type: string  
+    - name: gitops-repo-url
+      type: string  
       
   tasks:
     - name: appsody-build
@@ -29,8 +29,6 @@ spec:
         inputs:
         - name: service-source
           resource: service-source
-        - name: gitops-source
-          resource: gitops-source
         - name: docker-image
           resource: docker-image
       params:
@@ -44,3 +42,5 @@ spec:
         value: $(params.git-email)  
       - name: image-tag
         value: $(params.image-tag)  
+      - name: gitops-repo-url
+        value: $(params.gitops-repo-url)  

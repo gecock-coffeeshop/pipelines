@@ -22,4 +22,4 @@ spec:
       image: bitnami/kubectl
       script: |
         #!/usr/bin/env sh
-        kubectl apply -k /workspace/git-source/env/overlays
+        kubectl apply -k /workspace/git-source/environments

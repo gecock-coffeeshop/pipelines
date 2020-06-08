@@ -8,8 +8,6 @@ spec:
     resources:
       - name: service-source
         type: git
-      - name: gitops-source
-        type: git  
       - name: docker-image
         type: image
     params:
@@ -23,6 +21,8 @@ spec:
       - name: git-email
         type: string
       - name: image-tag
+        type: string  
+      - name: gitops-repo-url
         type: string  
 
   steps:
@@ -48,34 +48,32 @@ spec:
         #!/usr/bin/env sh
         buildah push --tls-verify=false $(inputs.resources.docker-image.url):$(inputs.params.image-tag) docker://$(inputs.resources.docker-image.url):$(inputs.params.image-tag)
       volumeMounts:
-         - mountPath: /var/lib/containers
-           name: varlibcontainers
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
     - name: promote
-      image: docker.io/matthewpwilson/hub
+      image: quay.io/redhat-developer/gitops-cli
       script: |
-        #!/usr/bin/env sh
-        set -e
+          #!/usr/bin/env sh
+          set -e
 
-        git config --global user.email "$(inputs.params.git-email)"
-        git config --global user.name "$(inputs.params.git-user)"
-        git config --global --add hub.host github.ibm.com
-        GITHUB_HOST=github.ibm.com
+          cd /workspace/$service_source
+          mkdir -p config
+          cp app-deploy.yaml config
 
-        branch="promote-`echo $(inputs.params.image-tag) | cut -c-6`"
-        cd "$gitops_source/services/$(inputs.params.reponame)/base"
-        git checkout -b $branch
-        cp -R /workspace/$service_source/config .
-        cp /workspace/$service_source/app-deploy.yaml config
-        git add config
-        message="Promoting $(inputs.params.reponame) from build-push-promote pipeline"
-        git commit -m "$message"
-        git push origin $branch
-        hub pull-request -m "$message"
+          # Generate a kustomize.yaml file under config with list of resources
+          cd config 
+          files=$(ls *.yaml)
+          echo "resources: " >> kustomization.yaml
+          for resource in $files
+          do
+            echo "  - $resource" >> kustomization.yaml
+          done  
+
+          services promote --from /workspace/$service_source --to $(inputs.params.gitops-repo-url) --service $(inputs.params.reponame) --repository-type ghe --commit-message "Promoting $(inputs.params.reponame) from build-push-promote pipeline" --commit-email "$(inputs.params.git-email)" --commit-name "$(inputs.params.git-user)"
+
       env:
         - name: service_source
           value: service-source
-        - name: gitops_source
-          value: gitops-source  
         - name: GITHUB_TOKEN
           valueFrom:
             secretKeyRef:
