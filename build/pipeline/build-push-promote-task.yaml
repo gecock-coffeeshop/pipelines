@@ -26,54 +26,51 @@ spec:
         type: string  
 
   steps:
-    #- name: build
-    #  securityContext:
-    #    privileged: true
-    #  image: appsody/appsody-buildah:0.5.9-buildah1.9.0
-    #  command: ['/bin/bash']
-    #  args:
-    #    - -c
-    #    - "cd /workspace/$service_source && appsody build -v --buildah --buildah-options='--format=docker' -t $(inputs.resources.docker-image.url):$(inputs.params.image-tag) -f $(inputs.params.app-deploy-file-name)"
-    #  env:
-    #    - name: service_source
-    #      value: service-source
-    #  volumeMounts:
-    #    - mountPath: /var/lib/containers
-    #      name: varlibcontainers
-    #- name: push
-    #  securityContext:
-    #    privileged: true
-    #  image: appsody/appsody-buildah:0.5.9-buildah1.9.0
-    #  script: |
-    #    #!/usr/bin/env sh
-    #    buildah push --tls-verify=false $(inputs.resources.docker-image.url):$(inputs.params.image-tag) docker://$(inputs.resources.docker-image.url):$(inputs.params.image-tag)
-    #  volumeMounts:
-    #     - mountPath: /var/lib/containers
-    #       name: varlibcontainers
+    - name: build
+      securityContext:
+        privileged: true
+      image: appsody/appsody-buildah:0.5.9-buildah1.9.0
+      command: ['/bin/bash']
+      args:
+        - -c
+        - "cd /workspace/$service_source && appsody build -v --buildah --buildah-options='--format=docker' -t $(inputs.resources.docker-image.url):$(inputs.params.image-tag) -f $(inputs.params.app-deploy-file-name)"
+      env:
+        - name: service_source
+          value: service-source
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
+    - name: push
+      securityContext:
+        privileged: true
+      image: appsody/appsody-buildah:0.5.9-buildah1.9.0
+      script: |
+        #!/usr/bin/env sh
+        buildah push --tls-verify=false $(inputs.resources.docker-image.url):$(inputs.params.image-tag) docker://$(inputs.resources.docker-image.url):$(inputs.params.image-tag)
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: varlibcontainers
     - name: promote
       image: quay.io/redhat-developer/gitops-cli
       script: |
-        #!/usr/bin/env sh
-        set -e
+          #!/usr/bin/env sh
+          set -e
 
-        git config --global user.email "$(inputs.params.git-email)"
-        git config --global user.name "$(inputs.params.git-user)"
+          cd /workspace/$service_source
+          mkdir -p config
+          cp app-deploy.yaml config
 
-        cd /workspace/$service_source
-        mkdir -p config
-        cp app-deploy.yaml config
+          # Generate a kustomize.yaml file under config with list of resources
+          cd config 
+          files=$(ls)
+          echo "resources: " >> kustomization.yaml
+          for resource in $files
+          do
+            echo "  - $resource" >> kustomization.yaml
+          done  
 
-        # Generate a kustomize.yaml file under config with list of resources
-        cd config 
-        files=$(ls)
-        KUSTOMIZATION_YAML="kustomization.yaml"
-        echo "resources: " >> $KUSTOMIZATION_YAML
-        for asset_name in $files
-        do
-          echo "  - $asset_name" >> $KUSTOMIZATION_YAML
-        done  
+          services promote --from /workspace/$service_source --to $(inputs.params.gitops-repo-url) --service $(inputs.params.reponame) --repository-type ghe --commit-message "Promoting $(inputs.params.reponame) from build-push-promote pipeline" --commit-email "$(inputs.params.git-email)" --commit-name "$(inputs.params.git-user)"
 
-        services promote --from /workspace/$service_source --to $(inputs.params.gitops-repo-url) --service $(inputs.params.reponame) --repository-type ghe --commit-message "Promoting $(inputs.params.reponame) from build-push-promote pipeline"
       env:
         - name: service_source
           value: service-source
