@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TaskRun
+metadata:
+    generateName: run-test-taks
+    namespace: coffeeshop-pipelines
+spec:
+  taskRef:
+    name: run-integration-tests
+  inputs:
+    params:
+    - name: ns
+      value: coffeeshop  
+  serviceAccountName: pipeline-service-account
+    
