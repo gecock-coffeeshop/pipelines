@@ -19,13 +19,23 @@ spec:
     - name: run-tests
       securityContext:
         privileged: true
-      image: matthewpwilson/coffeeshop-integration-tests:latest
+      image: matthewpwilson/coffeeshop-integration-tests:no-tc
       script: |
         #!/usr/bin/env sh
         export COFFEESHOP_URI=http://`cat /workspace/host`
         echo $COFFEESHOP_URI
         cd /project
         mvn clean verify
+  sidecars:
+    - name: selenium-chrome
+      image: selenium/standalone-chrome:3.141.59-20200409
+      volumeMounts:
+        - name: shm
+          mountPath: /dev/shm
+  volumes:
+    - name: shm
+      hostPath: 
+        path: /dev/shm
 
 
 

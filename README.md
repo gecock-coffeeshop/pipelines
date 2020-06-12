@@ -20,7 +20,9 @@ This repo contains Tekton resources for continuous integration & continuous depl
 1. Now you can manually run the pipelines: 
    * Build and promote the coffeeshop-ui service: `oc create -f build/run-pipeline.yaml`
    * Deploy the gitops-dev repo: `oc create -f deploy/run-pipeline.yaml`
+   * Run the integration tests only: `oc create -f deploy/run-test-task.yaml`
    * Promote a service from dev to staging: `oc create -f promote/run-pipeline.yaml`
+   
 
 **Triggers**
 
