@@ -1,12 +1,23 @@
-### Coffeeshop Continuous Deployment with Tekton
+# Coffee Shop CI/CD with Tekton
 
-This repo contains Tekton resources for continuous integration & continuous deployment of the Coffeeshop demo.
+This repo contains Tekton resources for continuous integration & continuous deployment of the Coffee Shop demo.
+
+It contains the following components:
+- Build, push & promote pipeline:
+   This pipeline implements CI for a single microservice. It builds a Docker image, pushes it to a repository, and then promotes the change to the GitOps repository.
+- Deploy pipline:
+   This pipeline implements CD for the whole application. It deploys the application into an OpenShift cluster and runs integration tets.
+- Promote pipeline:
+   This pipeline can be triggered manually to promote from one GitOps environment to another.   
+- Triggers:
+   These allow the pipeliens to be triggered by a GitHub webhoook.
+
+## Installation
 
 **Build, Deploy and Promote Pipelines**
-1. Install the OpenShift Pipelines Operator from OperatorHub.
 1. Create a personal access token on GitHub with the `public_repo` scope.
 1. Update the `password` field in the `deploy/pipeline/git-secrets.yaml` file to the personal access token created in the previous step.
-1. Create a personal access token DockerHub.
+1. Create a personal access token on DockerHub.
 1. Update `build/pipeline/docker-secret.yaml` with your Docker ID and token.
 1. In `build/pipeline/pipeline-resources.yaml`, update the `coffeeshop-ui-image` resource `url` attribute to an image repository you can push to.
 1. Deploy the pipeline components:
