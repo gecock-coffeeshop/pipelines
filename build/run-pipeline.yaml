@@ -25,4 +25,4 @@ spec:
     - name: image-tag
       value: "fake-sha"  
     - name: gitops-repo-url
-      value: "https://github.ibm.com/appsody-coffeeshop/gitops-dev"   
+      value: "https://github.com/ibm-icpa-coffeeshop/gitops-dev"   

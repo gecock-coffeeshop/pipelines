@@ -20,7 +20,7 @@ items:
     - name: revision
       value: master
     - name: url
-      value: https://github.ibm.com/appsody-coffeeshop/coffeeshop-ui
+      value: https://github.com/ibm-icpa-coffeeshop/coffeeshop-ui/
     type: git
 - apiVersion: tekton.dev/v1alpha1
   kind: PipelineResource
@@ -32,18 +32,6 @@ items:
     - name: revision
       value: master
     - name: url
-      value: https://github.ibm.com/appsody-coffeeshop/gitops-dev
+      value: https://github.com/ibm-icpa-coffeeshop/gitops-dev
     type: git
-- apiVersion: tekton.dev/v1alpha1
-  kind: PipelineResource
-  metadata: 
-    name: gitops-staging-repo
-    namespace: coffeeshop-pipelines
-  spec:
-    params:
-    - name: revision
-      value: master
-    - name: url
-      value: https://github.ibm.com/appsody-coffeeshop/gitops-staging
-    type: git        
 kind: List

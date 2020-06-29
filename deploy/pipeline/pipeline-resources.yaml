@@ -9,7 +9,7 @@ spec:
     - name: revision
       value: master
     - name: url
-      value: https://github.ibm.com/appsody-coffeeshop/gitops.git
+      value: https://github.com/ibm-icpa-coffeeshop/gitops-dev
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
@@ -22,4 +22,4 @@ spec:
     - name: revision
       value: master
     - name: url
-      value: https://github.ibm.com/appsody-coffeeshop/gitops-staging.git
+      value: <your_staging_repo>
