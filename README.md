@@ -7,8 +7,6 @@ It contains the following components:
    This pipeline implements CI for a single microservice. It builds a Docker image, pushes it to a repository, and then promotes the change to the GitOps repository.
 - Deploy pipline:
    This pipeline implements CD for the whole application. It deploys the application into an OpenShift cluster and runs integration tets.
-- Promote pipeline:
-   This pipeline can be triggered manually to promote from one GitOps environment to another.   
 - Triggers:
    These allow the pipeliens to be triggered by a GitHub webhoook.
 
