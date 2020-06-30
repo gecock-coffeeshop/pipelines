@@ -69,7 +69,7 @@ spec:
             echo "  - $resource" >> kustomization.yaml
           done  
 
-          services promote --from /workspace/$service_source --to $(inputs.params.gitops-repo-url) --service $(inputs.params.reponame) --repository-type ghe --commit-message "Promoting $(inputs.params.reponame) from build-push-promote pipeline" --commit-email "$(inputs.params.git-email)" --commit-name "$(inputs.params.git-user)"
+          services promote --from /workspace/$service_source --to $(inputs.params.gitops-repo-url) --service $(inputs.params.reponame) --commit-message "Promoting $(inputs.params.reponame) from build-push-promote pipeline" --commit-email "$(inputs.params.git-email)" --commit-name "$(inputs.params.git-user)"
 
       env:
         - name: service_source
