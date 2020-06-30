@@ -10,16 +10,3 @@ spec:
       value: master
     - name: url
       value: https://github.com/ibm-icpa-coffeeshop/gitops-dev
----
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  name: gitops-git-staging
-  namespace: coffeeshop-pipelines
-spec:
-  type: git
-  params:
-    - name: revision
-      value: master
-    - name: url
-      value: <your_staging_repo>

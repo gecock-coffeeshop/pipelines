@@ -18,20 +18,18 @@ It contains the following components:
 1. Create a personal access token on DockerHub.
 1. Update `build/pipeline/docker-secret.yaml` with your Docker ID and token.
 1. In `build/pipeline/pipeline-resources.yaml`, update the `coffeeshop-ui-image` resource `url` attribute to an image repository you can push to.
+1. You can also update the `gitops-dev-repo` PipelineResource to point to your own fork if you want to test creating pull requests. 
 1. Deploy the pipeline components:
    * `oc create ns coffeeshop-pipelines`
    * `oc apply -f serviceaccount.yaml`
    * `oc apply -f build/pipeline`
    * `oc apply -f deploy/pipeline`
-   * `oc apply -f promote/pipeline`
 1. Deploy the webhook secret. This is referenced by the service account, so nothing will work unless it exists.
    * `oc apply -f trigger/git-secrets.yaml`
 1. Now you can manually run the pipelines: 
    * Build and promote the coffeeshop-ui service: `oc create -f build/run-pipeline.yaml`
    * Deploy the gitops-dev repo: `oc create -f deploy/run-pipeline.yaml`
-   * Run the integration tests only: `oc create -f deploy/run-test-task.yaml`
-   * Promote a service from dev to staging: `oc create -f promote/run-pipeline.yaml`
-   
+   * Run the integration tests only: `oc create -f deploy/run-test-task.yaml`   
 
 **Triggers**
 
