@@ -37,6 +37,15 @@ rules:
       - get
       - create
   - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - create    
+      - update
+      - patch    
+  - apiGroups:
       - route.openshift.io
     resources:
       - routes
